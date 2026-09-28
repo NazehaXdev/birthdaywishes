@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Happy Birthday, Tanzu ❤️ | A Romantic Surprise</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+  <!-- React & ReactDOM -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+
+  <!-- Babel Standalone for React JSX -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- External Configuration & Custom Styles -->
+  <script src="./config.js"></script>
+  <link rel="stylesheet" href="./styles.css">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            roseGlow: '#f43f5e',
+            warmGold: '#f59e0b',
+            softLavender: '#f3e8ff',
+            romanticCream: '#fffdfa'
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="antialiased selection:bg-rose-200 selection:text-rose-900">
+  <div id="root"></div>
+
+  <!-- Audio Synthesizer (Native Web Audio API - 100% reliable, zero external files) -->
+  <script>
+    window.SoundManager = (function() {
+      let audioCtx = null;
+      let isMuted = false;
+      let ambientOscillators = [];
+      let isAmbientPlaying = false;
+
+      function getContext() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        return audioCtx;
+      }
+
+      // Gentle romantic chime
+      function playChime(freq = 523.25, duration = 0.8) {
+        if (isMuted) return;
+        try {
+          const ctx = getContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+          gain.gain.setValueAtTime(0.001, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.18, ctx.currentTime + 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + duration);
+
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + duration);
+        } catch (e) {}
+      }
+
+      // Romantic harp sparkle sequence
+      function playSparkleMelody() {
+        if (isMuted) return;
+        const notes = [523.25, 659.25, 783.99, 987.77, 1046.50]; // C5, E5, G5, B5, C6
+        notes.forEach((freq, idx) => {
+          setTimeout(() => playChime(freq, 1.2), idx * 110);
+        });
+      }
+
+      // Candle blow out sound (soft breath puff)
+      function playCandleExtinguish() {
+        if (isMuted) return;
+        try {
+          const ctx = getContext();
+          const bufferSize = ctx.sampleRate * 0.4;
+          const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+          const data = buffer.getChannelData(0);
+          for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.12));
+          }
+          const noise = ctx.createBufferSource();
+          noise.buffer = buffer;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.setValueAtTime(800, ctx.currentTime);
+          filter.frequency.exponentialRampToValueAtTime(200, ctx.currentTime + 0.35);
+
+          const gain = ctx.createGain();
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+
+          noise.connect(filter);
+          filter.connect(gain);
+          gain.connect(ctx.destination);
+          noise.start();
+        } catch (e) {}
+      }
+
+      // Gift unwrap magical sound
+      function playGiftOpen() {
+        if (isMuted) return;
+        const notes = [440, 554.37, 659.25, 880, 1108.73, 1318.51];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => playChime(freq, 1.4), idx * 80);
+        });
+      }
+
+      // Envelope open rustle
+      function playEnvelopeOpen() {
+        if (isMuted) return;
+        playChime(440, 0.5);
+        setTimeout(() => playChime(659.25, 0.8), 120);
+      }
+
+      // Romantic music-box ambient background melody
+      let ambientTimer = null;
+      const ambientProgression = [
+        [261.63, 329.63, 392.00, 493.88], // Cmaj7
+        [220.00, 261.63, 329.63, 392.00], // Am7
+        [174.61, 220.00, 261.63, 329.63], // Fmaj7
+        [196.00, 246.94, 293.66, 349.23]  // G7
+      ];
+      let chordIndex = 0;
+      let noteIndex = 0;
+
+      function startAmbientMelody() {
+        if (ambientTimer) return;
+        try {
+          getContext();
+        } catch (e) {}
+        ambientTimer = setInterval(() => {
+          if (isMuted) return;
+          const currentChord = ambientProgression[chordIndex];
+          const freq = currentChord[noteIndex];
+          playChime(freq * 1.5, 1.6);
+          noteIndex++;
+          if (noteIndex >= currentChord.length) {
+            noteIndex = 0;
+            chordIndex = (chordIndex + 1) % ambientProgression.length;
+          }
+        }, 1100);
+      }
+
+      function stopAmbientMelody() {
+        if (ambientTimer) {
+          clearInterval(ambientTimer);
+          ambientTimer = null;
+        }
+      }
+
+      return {
+        getContext,
+        playChime,
+        playSparkleMelody,
+        playCandleExtinguish,
+        playGiftOpen,
+        playEnvelopeOpen,
+        startAmbientMelody,
+        stopAmbientMelody,
+        toggleMute: () => {
+          isMuted = !isMuted;
+          if (!isMuted) {
+            startAmbientMelody();
+          }
+          return isMuted;
+        },
+        getIsMuted: () => isMuted
+      };
+    })();
+  </script>
+
+  <!-- React Application -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // SVG Icons
+    const Icons = {
+      Heart: ({ className = "w-6 h-6", fill = "currentColor" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+        </svg>
+      ),
+      Sparkles: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+          <path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/>
+        </svg>
+      ),
+      Stars: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      ),
+      Sun: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+        </svg>
+      ),
+      Flame: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>
+        </svg>
+      ),
+      Volume2: ({ className = "w-5 h-5" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>
+        </svg>
+      ),
+      VolumeX: ({ className = "w-5 h-5" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" x2="16" y1="9" y2="15"/><line x1="16" x2="22" y1="9" y2="15"/>
+        </svg>
+      ),
+      RotateCcw: ({ className = "w-5 h-5" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+        </svg>
+      ),
+      Edit3: ({ className = "w-4 h-4" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+        </svg>
+      ),
+      Moon: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="currentColor" stroke="none">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+        </svg>
+      ),
+      Gift: ({ className = "w-6 h-6" }) => (
+        <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/>
+        </svg>
+      )
+    };
+
+    // Main App Component
+    function App() {
+      const config = window.SURPRISE_CONFIG || {};
+      const [currentScene, setCurrentScene] = useState(1);
+      const [partnerName, setPartnerName] = useState(() => {
+        return localStorage.getItem('partner_name') || config.partnerName || "Tanzu";
+      });
+      const [isMuted, setIsMuted] = useState(false);
+      const [nameModalOpen, setNameModalOpen] = useState(false);
+      const [tempName, setTempName] = useState(partnerName);
+
+      useEffect(() => {
+        document.title = `Happy Birthday, ${partnerName} ❤️ | A Romantic Surprise`;
+      }, [partnerName]);
+
+      // Save partner name
+      const handleSaveName = (e) => {
+        e.preventDefault();
+        const trimmed = tempName.trim() || "Tanzu";
+        setPartnerName(trimmed);
+        localStorage.setItem('partner_name', trimmed);
+        setNameModalOpen(false);
+        window.SoundManager.playChime(659.25, 0.4);
+      };
+
+      const triggerConfettiCelebration = () => {
+        window.SoundManager.playSparkleMelody();
+        if (typeof confetti === 'function') {
+          // Colorful romantic confetti burst
+          const count = 200;
+          const defaults = { origin: { y: 0.65 } };
+          function fire(particleRatio, opts) {
+            confetti(Object.assign({}, defaults, opts, {
+              particleCount: Math.floor(count * particleRatio),
+              colors: ['#f43f5e', '#fb7185', '#fda4af', '#facc15', '#fde047', '#e879f9', '#ffffff']
+            }));
+          }
+          fire(0.25, { spread: 26, startVelocity: 55 });
+          fire(0.2, { spread: 60 });
+          fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
+          fire(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.2 });
+          fire(0.1, { spread: 120, startVelocity: 45 });
+        }
+      };
+
+      // Scene Navigation
+      const goToNext = () => {
+        window.SoundManager.playChime(587.33, 0.3);
+        setCurrentScene(prev => Math.min(prev + 1, 7));
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const replaySurprise = () => {
+        window.SoundManager.playSparkleMelody();
+        setCurrentScene(1);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      const sceneNames = [
+        "01 Opening",
+        "02 The Cake",
+        "03 Memories",
+        "04 The Letter",
+        "05 The Gift",
+        "06 Under Stars",
+        "07 Finale"
+      ];
+
+      return (
+        <div className={`relative min-h-screen flex flex-col justify-between transition-colors duration-1000 ${currentScene === 6 ? 'night-sky' : ''}`}>
+          {/* Ambient Glowing Orbs Background */}
+          {currentScene !== 6 && (
+            <div className="ambient-bg">
+              <div className="orb orb-1"></div>
+              <div className="orb orb-2"></div>
+              <div className="orb orb-3"></div>
+            </div>
+          )}
+
+          {/* Floating Starlight for Night Scene */}
+          {currentScene === 6 && <StarryBackground />}
+
+          {/* Top Bar: Progress Indicator & Controls */}
+          <header className="relative z-30 pt-4 px-4 sm:px-8 max-w-4xl mx-auto w-full">
+            <div className="glass-pill rounded-full py-2.5 px-4 sm:px-6 flex items-center justify-between shadow-sm">
+              {/* Partner Name Badge (Editable) */}
+              <button
+                onClick={() => { setTempName(partnerName); setNameModalOpen(true); }}
+                className="flex items-center gap-1.5 text-xs sm:text-sm font-medium text-rose-700 hover:text-rose-900 transition-colors group"
+                title="Click to personalize name"
+              >
+                <Icons.Heart className="w-4 h-4 text-rose-500 fill-rose-500 group-hover:scale-110 transition-transform" />
+                <span className="font-semibold underline decoration-rose-300 decoration-dotted underline-offset-2">
+                  {partnerName}
+                </span>
+                <Icons.Edit3 className="w-3 h-3 text-rose-400 group-hover:text-rose-600" />
+              </button>
+
+              {/* Progress Indicator */}
+              <div className="flex items-center gap-1 sm:gap-2">
+                {sceneNames.map((name, index) => {
+                  const stepNum = index + 1;
+                  const isActive = currentScene === stepNum;
+                  const isPassed = currentScene > stepNum;
+                  return (
+                    <button
+                      key={stepNum}
+                      onClick={() => {
+                        window.SoundManager.playChime(440 + index * 40, 0.2);
+                        setCurrentScene(stepNum);
+                      }}
+                      className={`h-2 sm:h-2.5 rounded-full transition-all duration-500 ${
+                        isActive
+                          ? 'w-7 sm:w-9 bg-gradient-to-r from-rose-500 to-amber-400 shadow-sm'
+                          : isPassed
+                          ? 'w-2 sm:w-2.5 bg-rose-300 hover:bg-rose-400'
+                          : 'w-2 sm:w-2.5 bg-rose-100 hover:bg-rose-200'
+                      }`}
+                      title={name}
+                    />
+                  );
+                })}
+              </div>
+
+              {/* Sound Toggle */}
+              <button
+                onClick={() => {
+                  const muted = window.SoundManager.toggleMute();
+                  setIsMuted(muted);
+                }}
+                className="p-1.5 text-rose-600 hover:text-rose-800 hover:bg-rose-50 rounded-full transition-colors"
+                title={isMuted ? "Unmute sounds" : "Mute sounds"}
+              >
+                {isMuted ? <Icons.VolumeX className="w-4 h-4 text-gray-400" /> : <Icons.Volume2 className="w-4 h-4 text-rose-500" />}
+              </button>
+            </div>
+          </header>
+
+          {/* Main Content Area */}
+          <main className="relative z-20 flex-1 flex flex-col items-center justify-center p-4 sm:p-6 w-full max-w-4xl mx-auto">
+            {currentScene === 1 && (
+              <Scene1Opening
+                partnerName={partnerName}
+                onStart={goToNext}
+              />
+            )}
+
+            {currentScene === 2 && (
+              <Scene2Cake
+                partnerName={partnerName}
+                config={config.cake}
+                onNext={goToNext}
+                triggerConfetti={triggerConfettiCelebration}
+              />
+            )}
+
+            {currentScene === 3 && (
+              <Scene3Memories
+                partnerName={partnerName}
+                memories={config.memories || []}
+                onNext={goToNext}
+              />
+            )}
+
+            {currentScene === 4 && (
+              <Scene4Letter
+                partnerName={partnerName}
+                config={config.letter}
+                onNext={goToNext}
+              />
+            )}
+
+            {currentScene === 5 && (
+              <Scene5Gift
+                partnerName={partnerName}
+                config={config.gift}
+                onNext={goToNext}
+              />
+            )}
+
+            {currentScene === 6 && (
+              <Scene6Stars
+                partnerName={partnerName}
+                config={config.nightScene}
+                onNext={goToNext}
+              />
+            )}
+
+            {currentScene === 7 && (
+              <Scene7Finale
+                partnerName={partnerName}
+                config={config.finale}
+                onReplay={replaySurprise}
+                triggerConfetti={triggerConfettiCelebration}
+              />
+            )}
+          </main>
+
+          {/* Footer note */}
+          <footer className="relative z-20 pb-4 text-center text-xs text-rose-900/40">
+            <span>Crafted with endless love & devotion ❤️</span>
+          </footer>
+
+          {/* Name Personalization Modal */}
+          {nameModalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+              <div className="glass-panel w-full max-w-sm rounded-3xl p-6 sm:p-8 animate-fade-in shadow-2xl">
+                <div className="flex items-center justify-center w-12 h-12 mx-auto rounded-full bg-rose-100 text-rose-500 mb-4">
+                  <Icons.Heart className="w-6 h-6 fill-rose-500" />
+                </div>
+                <h3 className="text-xl font-serif-luxury font-bold text-center text-rose-900 mb-1">
+                  Personalize the Surprise
+                </h3>
+                <p className="text-xs text-center text-rose-700/80 mb-6">
+                  What is your special nickname or name for them?
+                </p>
+                <form onSubmit={handleSaveName} className="space-y-4">
+                  <input
+                    type="text"
+                    value={tempName}
+                    onChange={(e) => setTempName(e.target.value)}
+                    placeholder="e.g. Tanzu"
+                    maxLength={30}
+                    className="w-full px-4 py-3 text-center text-base rounded-2xl border border-rose-200 focus:outline-none focus:ring-2 focus:ring-rose-400 bg-white/90 text-rose-950 font-medium"
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setNameModalOpen(false)}
+                      className="flex-1 py-2.5 rounded-2xl border border-rose-200 text-rose-700 text-sm font-medium hover:bg-rose-50 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-shadow"
+                    >
+                      Save & Apply ❤️
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 1: OPENING SCREEN
+    // ==============================================
+    function Scene1Opening({ partnerName, onStart }) {
+      return (
+        <div className="flex flex-col items-center text-center max-w-lg mx-auto py-8 sm:py-12 animate-fade-in">
+          {/* Pulsing Floating Heart Icon with aura */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-full bg-rose-400/25 blur-xl animate-pulse"></div>
+            <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-gradient-to-tr from-rose-500 via-pink-400 to-amber-300 p-1 shadow-xl flex items-center justify-center animate-heart-float">
+              <div className="w-full h-full rounded-full bg-white/90 backdrop-blur-md flex items-center justify-center text-rose-500 shadow-inner">
+                <Icons.Heart className="w-12 h-12 sm:w-14 sm:h-14 fill-rose-500 text-rose-500 animate-heartbeat" />
+              </div>
+            </div>
+          </div>
+
+          {/* Heading */}
+          <span className="font-romantic text-3xl sm:text-4xl text-rose-500 font-semibold mb-2">
+            Dearest
+          </span>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-serif-luxury font-bold text-rose-950 tracking-tight mb-4 drop-shadow-sm">
+            {partnerName} ❤️
+          </h1>
+
+          <p className="text-base sm:text-lg text-rose-800/80 font-light max-w-md mb-8 leading-relaxed">
+            Today is your special day... A moment meant to celebrate the beautiful soul you are, and every smile you bring to my heart.
+          </p>
+
+          {/* Glowing CTA Button */}
+          <button
+            onClick={() => {
+              window.SoundManager.playSparkleMelody();
+              window.SoundManager.startAmbientMelody();
+              onStart();
+            }}
+            className="btn-glow-romantic px-8 sm:px-10 py-4 rounded-full text-white font-semibold text-lg flex items-center gap-3 cursor-pointer group"
+          >
+            <span>Start the Surprise</span>
+            <span className="text-xl group-hover:rotate-12 transition-transform">✨</span>
+          </button>
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 2: BIRTHDAY CAKE WITH INTERACTIVE CANDLES
+    // ==============================================
+    function Scene2Cake({ partnerName, config, onNext, triggerConfetti }) {
+      // 3 interactive candles: true = lit, false = blown out
+      const [candles, setCandles] = useState([true, true, true]);
+      const [hasWished, setHasWished] = useState(false);
+      const [smokeKey, setSmokeKey] = useState([0, 0, 0]);
+
+      const litCount = candles.filter(Boolean).length;
+
+      const handleBlowCandle = (index) => {
+        if (!candles[index]) return; // already blown out
+
+        window.SoundManager.playCandleExtinguish();
+
+        const updated = [...candles];
+        updated[index] = false;
+        setCandles(updated);
+
+        // update smoke animation trigger
+        const sKeys = [...smokeKey];
+        sKeys[index] = Date.now();
+        setSmokeKey(sKeys);
+
+        // Check if all candles blown out
+        if (updated.every(c => !c)) {
+          setTimeout(() => {
+            setHasWished(true);
+            triggerConfetti();
+          }, 450);
+        }
+      };
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-lg mx-auto py-4 sm:py-6 w-full animate-fade-in">
+          {/* Header Title */}
+          <div className="mb-4">
+            <span className="font-romantic text-2xl sm:text-3xl text-rose-500 font-semibold">
+              Make a Sweet Wish
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif-luxury font-bold text-rose-950 mt-1">
+              Happy Birthday, {partnerName}! 🎂
+            </h2>
+          </div>
+
+          {/* Instruction Pill */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rose-100/80 border border-rose-200/60 text-xs sm:text-sm text-rose-800 font-medium mb-6 transition-all shadow-sm">
+            {litCount > 0 ? (
+              <>
+                <Icons.Flame className="w-4 h-4 text-amber-500 animate-pulse" />
+                <span>Tap each candle to blow it out ({litCount} remaining)</span>
+              </>
+            ) : (
+              <>
+                <Icons.Sparkles className="w-4 h-4 text-amber-500" />
+                <span className="text-rose-900 font-semibold">All candles blown out! Your wish is on its way ✨</span>
+              </>
+            )}
+          </div>
+
+          {/* Interactive Animated Birthday Cake */}
+          <div className="relative my-2 sm:my-4 flex flex-col items-center">
+            {/* Candle Row Mounted Right on top of the Cake */}
+            <div className="flex justify-center items-end gap-7 sm:gap-10 z-20 mb-[-12px]">
+              {candles.map((isLit, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => handleBlowCandle(idx)}
+                  className="candle-wrapper cursor-pointer group"
+                  title={isLit ? "Click to blow out this candle!" : "Blown out"}
+                >
+                  {/* Smoke puff animation */}
+                  {!isLit && smokeKey[idx] > 0 && (
+                    <div className="smoke-puff"></div>
+                  )}
+
+                  {/* Flame if lit (User-inspired multi-layer animated fuego) */}
+                  {isLit ? (
+                    <div className="flame-container">
+                      <div className="flame-halo"></div>
+                      <div className="fuego"></div>
+                      <div className="fuego"></div>
+                      <div className="fuego"></div>
+                      <div className="fuego"></div>
+                      <div className="fuego"></div>
+                      <div className="flame-inner"></div>
+                    </div>
+                  ) : (
+                    <div className="h-8 flex items-center justify-center">
+                      <span className="text-[10px] text-gray-400 font-mono italic">puff~</span>
+                    </div>
+                  )}
+
+                  {/* Wick */}
+                  <div className="candle-wick"></div>
+
+                  {/* Candle Body */}
+                  <div className="candle-stick">
+                    <div className="candle-stripes"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Elevated SVG Dropping/Tiered Cake (Enhanced from user's SVG) */}
+            <div className="relative w-64 sm:w-72 h-64 sm:h-72 drop-shadow-2xl">
+              <svg viewBox="0 0 320 280" className="w-full h-full overflow-visible">
+                <defs>
+                  <linearGradient id="cakePlateGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#f8fafc" />
+                    <stop offset="50%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#e2e8f0" />
+                  </linearGradient>
+
+                  <linearGradient id="frostingTopGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#fdf2f8" />
+                    <stop offset="50%" stopColor="#fce7f3" />
+                    <stop offset="100%" stopColor="#fbcfe8" />
+                  </linearGradient>
+
+                  <linearGradient id="spongeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#92400e" />
+                    <stop offset="35%" stopColor="#b45309" />
+                    <stop offset="70%" stopColor="#d97706" />
+                    <stop offset="100%" stopColor="#92400e" />
+                  </linearGradient>
+
+                  <linearGradient id="creamFillGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stopColor="#fff1f2" />
+                    <stop offset="50%" stopColor="#ffffff" />
+                    <stop offset="100%" stopColor="#fde047" />
+                  </linearGradient>
+
+                  <filter id="cakeGlow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="8" stdDeviation="10" floodColor="#f43f5e" floodOpacity="0.25" />
+                  </filter>
+                </defs>
+
+                {/* Cake Platter */}
+                <ellipse cx="160" cy="245" rx="145" ry="26" fill="url(#cakePlateGrad)" stroke="#f1f5f9" strokeWidth="3" filter="url(#cakeGlow)" />
+                <ellipse cx="160" cy="243" rx="125" ry="18" fill="none" stroke="#e2e8f0" strokeWidth="1.5" strokeDasharray="5 3" />
+
+                {/* Bottom Tier (Sponge Layer 1) */}
+                <g className="transition-transform duration-700">
+                  <path d="M 40 185 C 40 185, 40 230, 40 230 C 40 248, 280 248, 280 230 L 280 185 Z" fill="url(#spongeGrad)" />
+                  {/* Bottom Cream Line */}
+                  <path d="M 40 210 C 100 220, 220 220, 280 210 L 280 216 C 220 226, 100 226, 40 216 Z" fill="url(#creamFillGrad)" />
+                  {/* Bottom tier frosting border */}
+                  <ellipse cx="160" cy="185" rx="120" ry="22" fill="#fda4af" />
+                  <ellipse cx="160" cy="182" rx="118" ry="20" fill="url(#frostingTopGrad)" />
+                </g>
+
+                {/* Middle Tier (Sponge Layer 2) */}
+                <g className="transition-transform duration-700">
+                  <path d="M 70 120 C 70 120, 70 175, 70 175 C 70 190, 250 190, 250 175 L 250 120 Z" fill="url(#spongeGrad)" />
+                  {/* Middle Cream Filling */}
+                  <path d="M 70 148 C 120 156, 200 156, 250 148 L 250 154 C 200 162, 120 162, 70 154 Z" fill="url(#creamFillGrad)" />
+                  {/* Middle Tier Frosting Surface */}
+                  <ellipse cx="160" cy="120" rx="90" ry="17" fill="#fb7185" />
+                  <ellipse cx="160" cy="117" rx="88" ry="15" fill="url(#frostingTopGrad)" />
+                </g>
+
+                {/* Top Tier (Sponge Layer 3) */}
+                <g className="transition-transform duration-700">
+                  <path d="M 95 65 C 95 65, 95 110, 95 110 C 95 124, 225 124, 225 110 L 225 65 Z" fill="url(#spongeGrad)" />
+                  {/* Top Tier Frosting Surface */}
+                  <ellipse cx="160" cy="65" rx="65" ry="14" fill="#f43f5e" />
+                  <ellipse cx="160" cy="62" rx="63" ry="12" fill="url(#frostingTopGrad)" />
+
+                  {/* Luscious Cream Drips on Top Tier */}
+                  <path
+                    d="M 95 65
+                       Q 105 85, 110 70
+                       Q 120 95, 128 72
+                       Q 140 100, 150 68
+                       Q 165 94, 175 70
+                       Q 190 98, 202 72
+                       Q 215 86, 225 65
+                       L 225 62
+                       C 225 50, 95 50, 95 62 Z"
+                    fill="#fffdfa"
+                    opacity="0.95"
+                  />
+                </g>
+
+                {/* Strawberries & Rose Pearls Decoration */}
+                <circle cx="115" cy="56" r="6" fill="#e11d48" filter="url(#cakeGlow)" />
+                <circle cx="160" cy="53" r="7" fill="#e11d48" filter="url(#cakeGlow)" />
+                <circle cx="205" cy="56" r="6" fill="#e11d48" filter="url(#cakeGlow)" />
+
+                <circle cx="138" cy="58" r="3.5" fill="#fde047" />
+                <circle cx="182" cy="58" r="3.5" fill="#fde047" />
+
+                {/* Bottom Tier Sprinkles */}
+                <circle cx="80" cy="195" r="2.5" fill="#ec4899" />
+                <circle cx="120" cy="205" r="2.5" fill="#fbbf24" />
+                <circle cx="165" cy="198" r="2.5" fill="#ec4899" />
+                <circle cx="210" cy="206" r="2.5" fill="#fbbf24" />
+                <circle cx="245" cy="195" r="2.5" fill="#a855f7" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Reveal Wish Message when all candles extinguished */}
+          {hasWished && (
+            <div className="mt-4 p-5 rounded-3xl glass-panel max-w-md w-full border border-rose-300 shadow-xl animate-fade-in">
+              <p className="font-romantic text-3xl text-rose-600 font-semibold mb-2">
+                Your wish is sealed in the stars ✨
+              </p>
+              <p className="text-base text-rose-900 font-medium leading-relaxed mb-5">
+                "{config.wishMessage || "Make a wish... because today is all about you. ❤️"}"
+              </p>
+              <button
+                onClick={onNext}
+                className="btn-glow-romantic px-8 py-3.5 rounded-full text-white font-semibold text-base flex items-center justify-center gap-2 mx-auto"
+              >
+                <span>{config.buttonText || "Open the next surprise →"}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 3: ROMANTIC MEMORY HEARTS
+    // ==============================================
+    function Scene3Memories({ partnerName, memories, onNext }) {
+      const [selectedMemory, setSelectedMemory] = useState(null);
+      const [openedIds, setOpenedIds] = useState([]);
+
+      const handleOpenMemory = (mem) => {
+        window.SoundManager.playChime(659.25, 0.4);
+        setSelectedMemory(mem);
+        if (!openedIds.includes(mem.id)) {
+          setOpenedIds(prev => [...prev, mem.id]);
+        }
+      };
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-xl mx-auto py-4 sm:py-6 w-full animate-fade-in">
+          <div className="mb-4">
+            <span className="font-romantic text-2xl sm:text-3xl text-rose-500 font-semibold">
+              Treasured Feelings
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif-luxury font-bold text-rose-950 mt-1">
+              Sweet Memories & Love Notes ❤️
+            </h2>
+            <p className="text-xs sm:text-sm text-rose-800/80 mt-1">
+              Tap each glowing heart to reveal a reason why you are cherished
+            </p>
+          </div>
+
+          {/* Progress Tracker */}
+          <div className="mb-6 inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-100 text-xs font-medium text-rose-800">
+            <Icons.Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
+            <span>Unlocked {openedIds.length} of {memories.length} sweet notes</span>
+          </div>
+
+          {/* Floating Hearts Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 w-full mb-8">
+            {memories.map((mem, index) => {
+              const isOpened = openedIds.includes(mem.id);
+              const IconComp = Icons[mem.icon] || Icons.Heart;
+              return (
+                <div
+                  key={mem.id}
+                  onClick={() => handleOpenMemory(mem)}
+                  className={`glass-panel p-4 sm:p-5 rounded-2xl cursor-pointer transition-all duration-300 transform hover:-translate-y-2 hover:shadow-xl flex flex-col items-center group relative overflow-hidden ${
+                    isOpened ? 'border-rose-400 bg-white/85' : 'hover:border-rose-300'
+                  }`}
+                  style={{ animationDelay: `${index * 120}ms` }}
+                >
+                  <div className={`w-12 h-12 rounded-full bg-gradient-to-tr ${mem.color || 'from-pink-400 to-rose-400'} flex items-center justify-center text-white shadow-md mb-2 group-hover:scale-110 transition-transform`}>
+                    <IconComp className="w-6 h-6" />
+                  </div>
+                  <h4 className="font-semibold text-rose-950 text-sm sm:text-base">
+                    {mem.title}
+                  </h4>
+                  <p className="text-[11px] text-rose-700/70 mt-0.5 line-clamp-1">
+                    {isOpened ? "Read note ✓" : "Tap to open"}
+                  </p>
+                  {isOpened && (
+                    <span className="absolute top-2 right-2 text-rose-500 text-xs">❤️</span>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Button to proceed */}
+          <button
+            onClick={onNext}
+            className="btn-glow-romantic px-8 py-3.5 rounded-full text-white font-semibold text-base flex items-center gap-2 shadow-lg"
+          >
+            <span>Continue to our letter →</span>
+          </button>
+
+          {/* Expanded Memory Modal */}
+          {selectedMemory && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/45 backdrop-blur-md">
+              <div className="glass-panel w-full max-w-md rounded-3xl p-6 sm:p-8 animate-fade-in shadow-2xl relative">
+                <button
+                  onClick={() => {
+                    window.SoundManager.playChime(440, 0.2);
+                    setSelectedMemory(null);
+                  }}
+                  className="absolute top-4 right-4 p-2 text-rose-400 hover:text-rose-700 rounded-full hover:bg-rose-100 transition-colors"
+                >
+                  ✕
+                </button>
+
+                <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-rose-500 to-amber-300 mx-auto flex items-center justify-center text-white shadow-lg mb-4">
+                  <Icons.Heart className="w-7 h-7 fill-white" />
+                </div>
+
+                <h3 className="text-2xl font-serif-luxury font-bold text-rose-950 mb-2">
+                  {selectedMemory.title}
+                </h3>
+
+                <div className="w-16 h-1 bg-rose-300 mx-auto rounded-full mb-4"></div>
+
+                <p className="text-rose-900 text-base sm:text-lg leading-relaxed mb-6 font-normal">
+                  "{selectedMemory.message}"
+                </p>
+
+                <button
+                  onClick={() => {
+                    window.SoundManager.playChime(440, 0.2);
+                    setSelectedMemory(null);
+                  }}
+                  className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 text-white font-semibold shadow-md hover:shadow-lg transition-shadow"
+                >
+                  Keep in my heart 💕
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 4: THE LOVE LETTER 💌 (Typewriter & Envelope)
+    // ==============================================
+    function Scene4Letter({ partnerName, config, onNext }) {
+      const [isOpen, setIsOpen] = useState(false);
+      const [displayedText, setDisplayedText] = useState("");
+      const [isTypingComplete, setIsTypingComplete] = useState(false);
+
+      const paragraphs = config.paragraphs || [
+        "Dear Tanzu,",
+        "Happy Birthday! Today isn't just another day on the calendar—it's the day the world was blessed with your radiant light, your gentle heart, and your beautiful soul.",
+        "Thank you for being my companion, my confidant, my biggest cheerleader, and my love, Tanzu.",
+        "Forever and always yours, Tanzu ❤️"
+      ];
+
+      const fullText = paragraphs.join("\n\n");
+
+      // Handle Envelope Click
+      const handleOpenEnvelope = () => {
+        if (isOpen) return;
+        window.SoundManager.playEnvelopeOpen();
+        setIsOpen(true);
+      };
+
+      // Typewriter Effect
+      useEffect(() => {
+        if (!isOpen) return;
+
+        let currentIndex = 0;
+        const speed = 25; // ms per character
+
+        const interval = setInterval(() => {
+          if (currentIndex <= fullText.length) {
+            setDisplayedText(fullText.slice(0, currentIndex));
+            currentIndex++;
+          } else {
+            clearInterval(interval);
+            setIsTypingComplete(true);
+          }
+        }, speed);
+
+        return () => clearInterval(interval);
+      }, [isOpen, fullText]);
+
+      // Skip typewriter to show all immediately
+      const handleSkip = () => {
+        setDisplayedText(fullText);
+        setIsTypingComplete(true);
+      };
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-xl mx-auto py-4 sm:py-6 w-full animate-fade-in">
+          <div className="mb-4">
+            <span className="font-romantic text-2xl sm:text-3xl text-rose-500 font-semibold">
+              From the Depths of My Heart
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif-luxury font-bold text-rose-950 mt-1">
+              {config.heading || "A letter for you..."}
+            </h2>
+          </div>
+
+          {!isOpen ? (
+            /* Closed Wax-Sealed Envelope */
+            <div className="my-8 flex flex-col items-center">
+              <p className="text-sm text-rose-800 mb-4 animate-pulse">
+                Click the wax seal to open your letter 💌
+              </p>
+
+              <div
+                onClick={handleOpenEnvelope}
+                className="envelope-container group cursor-pointer"
+              >
+                <div className="envelope-base"></div>
+                <div className="envelope-flap"></div>
+                <div className="wax-seal">
+                  <Icons.Heart className="w-6 h-6 fill-white" />
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Open Letter with Sliding Paper & Typewriter */
+            <div className="w-full my-4">
+              <div className="letter-sheet p-6 sm:p-10 text-left border border-rose-200/80 shadow-2xl relative animate-fade-in max-h-[60vh] overflow-y-auto">
+                {/* Vintage Letter Header */}
+                <div className="flex items-center justify-between border-b border-rose-200 pb-3 mb-5">
+                  <span className="font-romantic text-2xl text-rose-600 font-semibold">
+                    My Dearest {partnerName},
+                  </span>
+                  <span className="text-xs text-rose-500/80 font-mono">
+                    {config.date || "Birthday Edition"}
+                  </span>
+                </div>
+
+                {/* Typewriter Body */}
+                <div className="text-rose-950 text-base sm:text-lg leading-relaxed whitespace-pre-line font-serif-luxury">
+                  {displayedText}
+                  {!isTypingComplete && <span className="typing-cursor"></span>}
+                </div>
+
+                {/* Quick actions for user */}
+                {!isTypingComplete && (
+                  <div className="mt-4 text-right">
+                    <button
+                      onClick={handleSkip}
+                      className="text-xs text-rose-600 hover:text-rose-800 underline decoration-dotted"
+                    >
+                      Read all at once →
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Next step button */}
+              <div className="mt-6 flex justify-center">
+                <button
+                  onClick={onNext}
+                  className="btn-glow-romantic px-8 py-3.5 rounded-full text-white font-semibold text-base flex items-center gap-2 shadow-lg"
+                >
+                  <span>{config.buttonText || "I have a gift for you 🎁 →"}</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 5: INTERACTIVE GIFT 🎁
+    // ==============================================
+    function Scene5Gift({ partnerName, config, onNext }) {
+      const [isOpen, setIsOpen] = useState(false);
+
+      const handleUnwrap = () => {
+        if (isOpen) return;
+        window.SoundManager.playGiftOpen();
+        setIsOpen(true);
+      };
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-lg mx-auto py-4 sm:py-6 w-full animate-fade-in">
+          <div className="mb-4">
+            <span className="font-romantic text-2xl sm:text-3xl text-rose-500 font-semibold">
+              Special Delivery
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif-luxury font-bold text-rose-950 mt-1">
+              {config.title || "A Little Gift from My Heart"}
+            </h2>
+            <p className="text-xs sm:text-sm text-rose-800/80 mt-1">
+              {!isOpen ? config.tapInstruction : "Your gift is unwrapped! ✨"}
+            </p>
+          </div>
+
+          {/* 3D Wrapped Gift Box */}
+          <div className="my-6">
+            <div onClick={handleUnwrap} className="gift-wrapper">
+              <div className="gift-box">
+                {/* Gift Lid */}
+                <div className={`gift-lid ${isOpen ? 'opened' : ''}`}>
+                  <div className="ribbon-vertical"></div>
+                  <div className="ribbon-bow">
+                    <div className="w-7 h-5 rounded-full border-2 border-amber-300 bg-amber-400 rotate-[-20deg]"></div>
+                    <div className="w-7 h-5 rounded-full border-2 border-amber-300 bg-amber-400 rotate-[20deg] ml-[-6px]"></div>
+                  </div>
+                </div>
+
+                {/* Gift Body */}
+                <div className="gift-body">
+                  <div className="ribbon-vertical"></div>
+                  <div className="ribbon-horizontal"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Revealed Secret Keepsake */}
+          {isOpen && (
+            <div className="glass-panel p-6 sm:p-8 rounded-3xl border border-amber-300 shadow-2xl max-w-md w-full animate-fade-in mt-4">
+              <span className="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-semibold mb-2">
+                {config.revealTitle || "One more little surprise... ✨"}
+              </span>
+
+              <h3 className="text-xl sm:text-2xl font-serif-luxury font-bold text-rose-950 mb-3">
+                {config.cardHeading || "Lifetime Romantic Coupon 🎟️"}
+              </h3>
+
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-50 to-rose-50 border border-dashed border-amber-300 mb-5 text-rose-900 text-sm sm:text-base leading-relaxed">
+                {config.cardBody || "Unlimited hugs, late-night talks, forehead kisses, and holding your hand through everything."}
+              </div>
+
+              <button
+                onClick={onNext}
+                className="btn-glow-romantic px-8 py-3.5 rounded-full text-white font-semibold text-base flex items-center justify-center gap-2 mx-auto"
+              >
+                <span>{config.buttonText || "Keep going →"}</span>
+              </button>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 6: CELESTIAL STARRY NIGHT 🌙
+    // ==============================================
+    function Scene6Stars({ partnerName, config, onNext }) {
+      const [modalOpen, setModalOpen] = useState(false);
+
+      const handleRevealPromise = () => {
+        window.SoundManager.playSparkleMelody();
+        setModalOpen(true);
+      };
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-lg mx-auto py-8 sm:py-12 w-full animate-fade-in text-white">
+          {/* Glowing Crescent Moon */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-full bg-amber-200/25 blur-2xl animate-pulse"></div>
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-amber-100 via-amber-200 to-yellow-300 p-1 shadow-2xl flex items-center justify-center">
+              <Icons.Moon className="w-12 h-12 text-indigo-950" />
+            </div>
+          </div>
+
+          <span className="font-romantic text-3xl sm:text-4xl text-pink-300 font-semibold mb-2">
+            Under the Silent Moon & Stars
+          </span>
+
+          <h2 className="text-3xl sm:text-5xl font-serif-luxury font-bold tracking-tight text-white mb-4 drop-shadow-md">
+            {config.title || `Happy Birthday, ${partnerName} ❤️`}
+          </h2>
+
+          <p className="text-base sm:text-lg text-pink-100/80 font-light max-w-md mb-8 leading-relaxed">
+            {config.subtitle || "Thank you for being such a beautiful part of my life."}
+          </p>
+
+          {/* Interactive Button */}
+          <button
+            onClick={handleRevealPromise}
+            className="px-8 sm:px-10 py-4 rounded-full bg-gradient-to-r from-pink-500 via-rose-500 to-amber-400 text-white font-semibold text-lg shadow-xl hover:shadow-pink-500/50 hover:scale-105 transition-all flex items-center gap-2 cursor-pointer"
+          >
+            <span>{config.interactiveButton || "One Last Thing..."}</span>
+            <span>✨</span>
+          </button>
+
+          {/* Vow Modal */}
+          {modalOpen && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md">
+              <div className="bg-slate-900/90 border border-pink-400/40 w-full max-w-md rounded-3xl p-6 sm:p-8 animate-fade-in shadow-2xl relative text-center">
+                <div className="w-12 h-12 rounded-full bg-pink-500/20 text-pink-300 mx-auto flex items-center justify-center mb-4">
+                  <Icons.Stars className="w-6 h-6" />
+                </div>
+
+                <h3 className="text-2xl font-serif-luxury font-bold text-pink-100 mb-4">
+                  {config.modalTitle || "A Promise Under the Stars 🌙"}
+                </h3>
+
+                <p className="text-pink-100/90 text-base sm:text-lg leading-relaxed mb-6 font-light italic">
+                  "{config.modalMessage || "If I could give you one thing in life, I would give you the ability to see yourself through my eyes."}"
+                </p>
+
+                <button
+                  onClick={() => {
+                    setModalOpen(false);
+                    onNext();
+                  }}
+                  className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-pink-500 to-amber-400 text-white font-semibold shadow-lg hover:shadow-pink-500/50 transition-all"
+                >
+                  Our Journey Continues →
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ==============================================
+    // SCENE 7: GRAND FINALE 🎆
+    // ==============================================
+    function Scene7Finale({ partnerName, config, onReplay, triggerConfetti }) {
+      useEffect(() => {
+        triggerConfetti();
+        const timer = setInterval(() => {
+          triggerConfetti();
+        }, 3500);
+        return () => clearInterval(timer);
+      }, []);
+
+      return (
+        <div className="flex flex-col items-center text-center max-w-lg mx-auto py-8 sm:py-12 w-full animate-fade-in">
+          {/* Beating 3D Glowing Heart */}
+          <div className="relative mb-6">
+            <div className="absolute inset-0 rounded-full bg-rose-500/30 blur-3xl animate-pulse"></div>
+            <div className="w-28 h-28 sm:w-32 sm:h-32 rounded-full bg-gradient-to-tr from-rose-500 via-pink-400 to-amber-300 p-1 shadow-2xl flex items-center justify-center animate-heart-float">
+              <div className="w-full h-full rounded-full bg-white/95 flex items-center justify-center text-rose-500 shadow-inner">
+                <Icons.Heart className="w-16 h-16 sm:w-20 sm:h-20 fill-rose-500 text-rose-500 animate-heartbeat" />
+              </div>
+            </div>
+          </div>
+
+          <span className="font-romantic text-3xl sm:text-4xl text-rose-500 font-semibold mb-2">
+            Forever & Always
+          </span>
+
+          <h1 className="text-4xl sm:text-6xl font-serif-luxury font-bold text-rose-950 tracking-tight mb-4">
+            Happy Birthday, {partnerName}! ❤️
+          </h1>
+
+          <p className="text-base sm:text-lg text-rose-900/80 font-normal max-w-md mb-8 leading-relaxed">
+            {config.subHeading || "May this year bring you as much joy, warmth, and peace as you bring to my life."}
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <button
+              onClick={triggerConfetti}
+              className="px-6 py-3 rounded-full bg-rose-100 text-rose-800 font-semibold text-sm hover:bg-rose-200 transition-colors flex items-center justify-center gap-2"
+            >
+              <span>More Confetti 🎉</span>
+            </button>
+
+            <button
+              onClick={onReplay}
+              className="btn-glow-romantic px-8 py-3.5 rounded-full text-white font-semibold text-base flex items-center justify-center gap-2 shadow-xl"
+            >
+              <Icons.RotateCcw className="w-4 h-4" />
+              <span>{config.replayButton || "Replay the Surprise ↻"}</span>
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // ==============================================
+    // HELPER: Starry Background Generator
+    // ==============================================
+    function StarryBackground() {
+      const stars = Array.from({ length: 45 }).map((_, i) => ({
+        id: i,
+        top: `${Math.random() * 95}%`,
+        left: `${Math.random() * 98}%`,
+        size: `${Math.random() * 3 + 1}px`,
+        duration: `${Math.random() * 4 + 2}s`
+      }));
+
+      return (
+        <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          {stars.map((s) => (
+            <div
+              key={s.id}
+              className="star"
+              style={{
+                top: s.top,
+                left: s.left,
+                width: s.size,
+                height: s.size,
+                '--duration': s.duration
+              }}
+            />
+          ))}
+        </div>
+      );
+    }
+
+    // Render the React application
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

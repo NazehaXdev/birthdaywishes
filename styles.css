@@ -1,0 +1,565 @@
+/* Romantic Birthday Surprise Stylesheet */
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --primary-pink: #f472b6;
+  --rose-glow: rgba(244, 114, 182, 0.45);
+  --gold-glow: rgba(251, 191, 36, 0.5);
+  --lavender: #e9d5ff;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Outfit', sans-serif;
+  overflow-x: hidden;
+  background: radial-gradient(circle at 50% 20%, #ffe4e9 0%, #fed7e2 25%, #fce7f3 50%, #f3e8ff 75%, #fae8ff 100%);
+  min-height: 100vh;
+  color: #4a2835;
+  user-select: none;
+}
+
+.font-romantic {
+  font-family: 'Dancing Script', cursive;
+}
+
+.font-serif-luxury {
+  font-family: 'Playfair Display', serif;
+}
+
+/* Animated Ambient Glow Background */
+.ambient-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.55;
+  animation: floatOrb 18s ease-in-out infinite alternate;
+}
+
+.orb-1 {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle, #fbcfe8 0%, #f472b6 60%, transparent 80%);
+  top: -100px;
+  left: -80px;
+  animation-duration: 22s;
+}
+
+.orb-2 {
+  width: 460px;
+  height: 460px;
+  background: radial-gradient(circle, #fed7aa 0%, #f43f5e 50%, transparent 80%);
+  bottom: -100px;
+  right: -80px;
+  animation-duration: 26s;
+  animation-delay: -5s;
+}
+
+.orb-3 {
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, #e9d5ff 0%, #c084fc 60%, transparent 80%);
+  top: 35%;
+  right: 20%;
+  animation-duration: 20s;
+  animation-delay: -10s;
+}
+
+@keyframes floatOrb {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(40px, 60px) scale(1.12);
+  }
+  100% {
+    transform: translate(-30px, 30px) scale(0.95);
+  }
+}
+
+/* Glassmorphism Card */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 16px 40px -10px rgba(244, 63, 94, 0.12),
+              0 0 20px 2px rgba(255, 228, 230, 0.4);
+}
+
+.glass-pill {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 15px rgba(244, 63, 94, 0.08);
+}
+
+/* Glowing Button */
+.btn-glow-romantic {
+  background: linear-gradient(135deg, #f43f5e 0%, #fb7185 50%, #f59e0b 100%);
+  box-shadow: 0 8px 25px -4px rgba(244, 63, 94, 0.5),
+              0 0 18px 2px rgba(251, 191, 36, 0.35);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-glow-romantic:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 14px 30px -4px rgba(244, 63, 94, 0.65),
+              0 0 25px 5px rgba(251, 191, 36, 0.5);
+}
+
+.btn-glow-romantic:active {
+  transform: translateY(1px) scale(0.98);
+}
+
+.btn-glow-romantic::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -60%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(60deg, transparent 40%, rgba(255, 255, 255, 0.4) 50%, transparent 60%);
+  transform: rotate(25deg);
+  animation: shimmerLight 4s infinite;
+}
+
+@keyframes shimmerLight {
+  0% { transform: translateX(-100%) rotate(25deg); }
+  25%, 100% { transform: translateX(100%) rotate(25deg); }
+}
+
+/* ==============================================
+   CANDLE & FLAME ANIMATIONS (Inspired by user's SVG demo)
+   ============================================== */
+.candle-wrapper {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  user-select: none;
+  transition: transform 0.25s ease;
+}
+
+.candle-wrapper:hover {
+  transform: scale(1.08);
+}
+
+.candle-stick {
+  background: linear-gradient(to right, #ffffff, #fff1f2, #ffe4e6);
+  border-radius: 6px;
+  width: 14px;
+  height: 48px;
+  position: relative;
+  box-shadow: inset 1px 0 2px rgba(255, 255, 255, 0.8),
+              inset -1px 0 2px rgba(225, 29, 72, 0.2),
+              0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.candle-stripes {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 6px,
+    rgba(244, 63, 94, 0.5) 6px,
+    rgba(244, 63, 94, 0.5) 10px
+  );
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.candle-wick {
+  width: 2px;
+  height: 8px;
+  background: #4b3832;
+  border-radius: 1px;
+  margin-bottom: -1px;
+}
+
+/* Realistic Multi-layer Flickering Flame (User SVG Inspired Fuego) */
+.flame-container {
+  position: relative;
+  width: 24px;
+  height: 36px;
+  margin-bottom: 2px;
+}
+
+.flame-halo {
+  position: absolute;
+  inset: -14px;
+  background: radial-gradient(circle, rgba(254, 240, 138, 0.65) 0%, rgba(251, 146, 60, 0.35) 45%, transparent 70%);
+  border-radius: 50%;
+  animation: haloPulse 1.6s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+.fuego {
+  border-radius: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 24px;
+  transform-origin: center bottom;
+}
+
+.fuego:nth-child(1) {
+  animation: fuego 2s infinite ease-in-out;
+}
+.fuego:nth-child(2) {
+  animation: fuego 1.5s infinite ease-in-out;
+}
+.fuego:nth-child(3) {
+  animation: fuego 1s infinite ease-in-out;
+}
+.fuego:nth-child(4) {
+  animation: fuego 0.6s infinite ease-in-out;
+}
+.fuego:nth-child(5) {
+  animation: fuego 0.3s infinite ease-in-out;
+}
+
+@keyframes fuego {
+  0%, 100% {
+    background: rgba(254, 248, 97, 0.85);
+    box-shadow: 0 0 25px 6px rgba(254, 240, 138, 0.5),
+                0 0 10px 2px rgba(249, 115, 22, 0.6);
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  50% {
+    background: rgba(255, 70, 0, 0.45);
+    box-shadow: 0 0 35px 12px rgba(254, 240, 138, 0.3),
+                0 0 15px 4px rgba(239, 68, 68, 0.7);
+    transform: translateX(-50%) translateY(-6px) scale(0.88);
+  }
+}
+
+.flame-inner {
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 5px;
+  height: 12px;
+  border-radius: 50% 50% 40% 40%;
+  background: #ffffff;
+  opacity: 0.95;
+  filter: blur(0.5px);
+  z-index: 10;
+}
+
+@keyframes haloPulse {
+  0% { opacity: 0.6; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1.15); }
+}
+
+
+/* Smoke puff when blown out */
+.smoke-puff {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(180, 170, 180, 0.6);
+  filter: blur(4px);
+  animation: smokeRise 1.4s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes smokeRise {
+  0% {
+    opacity: 0.8;
+    transform: translateX(-50%) scale(0.5);
+  }
+  50% {
+    opacity: 0.4;
+    transform: translateX(-40%) translateY(-25px) scale(1.4);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-60%) translateY(-55px) scale(2.2);
+  }
+}
+
+/* Heart Floating Animation */
+@keyframes heartFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-12px) rotate(3deg);
+  }
+}
+
+.animate-heart-float {
+  animation: heartFloat 4s ease-in-out infinite;
+}
+
+/* Pulse Heartbeat */
+@keyframes heartBeat {
+  0% { transform: scale(1); }
+  14% { transform: scale(1.18); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.14); }
+  70% { transform: scale(1); }
+}
+
+.animate-heartbeat {
+  animation: heartBeat 2s infinite ease-in-out;
+}
+
+/* ==============================================
+   ENVELOPE & LETTER 3D ANIMATIONS
+   ============================================== */
+.envelope-container {
+  perspective: 1000px;
+  position: relative;
+  width: 320px;
+  height: 220px;
+  margin: 0 auto;
+}
+
+@media (min-width: 640px) {
+  .envelope-container {
+    width: 380px;
+    height: 250px;
+  }
+}
+
+.envelope-base {
+  position: absolute;
+  inset: 0;
+  background: #fdf2f4;
+  border-radius: 12px;
+  box-shadow: 0 15px 35px -5px rgba(225, 29, 72, 0.18),
+              0 0 25px rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(251, 207, 216, 0.8);
+  overflow: hidden;
+}
+
+/* Flap of envelope */
+.envelope-flap {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(180deg, #fbcfe8 0%, #f9a8d4 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.envelope-flap.opened {
+  transform: rotateX(180deg);
+  z-index: 1;
+}
+
+/* Wax Seal Button */
+.wax-seal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f43f5e, #be123c);
+  box-shadow: 0 4px 12px rgba(190, 18, 60, 0.4),
+              inset 0 2px 4px rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 15;
+}
+
+.wax-seal:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(190, 18, 60, 0.6);
+}
+
+/* Letter Sheet */
+.letter-sheet {
+  background: #fffdfa;
+  background-image: radial-gradient(#fbcfe8 0.75px, transparent 0.75px), radial-gradient(#fbcfe8 0.75px, #fffdfa 0.75px);
+  background-size: 30px 30px;
+  background-position: 0 0, 15px 15px;
+  border: 1px solid #fce7f3;
+  box-shadow: 0 10px 30px rgba(225, 29, 72, 0.12);
+  border-radius: 12px;
+}
+
+/* ==============================================
+   3D GIFT BOX ANIMATIONS
+   ============================================== */
+.gift-wrapper {
+  perspective: 800px;
+  cursor: pointer;
+}
+
+.gift-box {
+  width: 170px;
+  height: 160px;
+  position: relative;
+  margin: 0 auto;
+  transition: transform 0.4s ease;
+}
+
+.gift-wrapper:hover .gift-box {
+  transform: translateY(-6px) scale(1.04);
+}
+
+.gift-lid {
+  position: absolute;
+  top: -8px;
+  left: -10px;
+  width: 190px;
+  height: 44px;
+  background: linear-gradient(135deg, #f43f5e 0%, #fb7185 100%);
+  border-radius: 8px;
+  box-shadow: 0 6px 15px rgba(244, 63, 94, 0.3);
+  z-index: 5;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transform-origin: top center;
+}
+
+.gift-lid.opened {
+  transform: translateY(-90px) rotate(-18deg) scale(1.05);
+  opacity: 0.9;
+}
+
+.gift-body {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 170px;
+  height: 130px;
+  background: linear-gradient(135deg, #fb7185 0%, #f43f5e 100%);
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 16px 30px rgba(225, 29, 72, 0.25);
+  overflow: hidden;
+}
+
+/* Ribbon cross */
+.ribbon-vertical {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 26px;
+  background: linear-gradient(to right, #fde047, #facc15, #eab308);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+}
+
+.ribbon-horizontal {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+  height: 26px;
+  background: linear-gradient(to bottom, #fde047, #facc15, #eab308);
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.5);
+}
+
+.ribbon-bow {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 6;
+}
+
+/* Starlight and Night Sky */
+.night-sky {
+  background: radial-gradient(circle at 50% 30%, #2e1065 0%, #1e1b4b 45%, #0f172a 100%);
+  color: #fce7f3;
+}
+
+.star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: starTwinkle var(--duration, 3s) infinite ease-in-out;
+}
+
+@keyframes starTwinkle {
+  0%, 100% { opacity: 0.2; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 8px #ffffff; }
+}
+
+/* Typewriter blink cursor */
+.typing-cursor::after {
+  content: "|";
+  display: inline-block;
+  color: #f43f5e;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(244, 63, 94, 0.3);
+  border-radius: 4px;
+}
+
+/* Smooth Fade In Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+

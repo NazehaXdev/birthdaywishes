@@ -1,0 +1,4 @@
+.vscode/
+.php-preview-router.php
+deploy-log.txt
+deploy-result.json
